@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_jp5eCt1q0aDX69IyEBOAFSYk7Y9K",
+  "orgId": "team_XvPp3RGAFrg9WAR0vcKKx0NQ",
+  "projectName": "aplikacja-poetycka-les",
+  "settings": {
+    "createdAt": 1792934028923,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
