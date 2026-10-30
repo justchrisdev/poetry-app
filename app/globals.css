@@ -20,14 +20,34 @@ nav { display: flex; align-items: center; gap: 22px; }
 .text-button, .icon-button { color: var(--ink); background: none; border: 0; display: inline-flex; align-items: center; gap: 8px; }
 .text-button { font: 500 12px/1 Arial, sans-serif; letter-spacing: .05em; }
 .icon-button { padding: 7px; }
-.poetry-main { width: min(960px, calc(100% - 64px)); margin: 0 auto; flex: 1; display: grid; grid-template-columns: .85fr 1.4fr; gap: 92px; align-items: center; padding: 60px 0 54px; }
+
+.poetry-main { 
+  width: min(960px, calc(100% - 64px)); 
+  margin: 0 auto; 
+  flex: 1; 
+  display: grid; 
+  grid-template-columns: .85fr 1.4fr; 
+  gap: 92px; 
+  padding: 60px 0 54px; 
+  align-items: start; /* Kluczowe: pozwala elementom zachować niezależną wysokość */
+}
+
 .eyebrow { color: var(--accent); font: 600 10px/1.2 Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; margin: 0 0 22px; }
 h1, h2, .poem-text { font-family: Georgia, 'Times New Roman', serif; }
 h1 { font-size: clamp(48px, 6vw, 76px); font-weight: 400; letter-spacing: -.055em; line-height: .97; margin: 0; }
 h1 em { color: var(--accent); font-style: italic; }
-.intro { position: sticky; top: 118px; align-self: start; }
+
+/* Prawidłowy sticky bez skoków i dodatkowych scrollbarów */
+.intro { 
+  position: sticky; 
+  top: 118px; /* Odległość od górnej krawędzi ekranu po uwzględnieniu headera */
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
 .intro-copy { color: var(--muted-ink); font: 14px/1.7 Arial, sans-serif; margin-top: 29px; max-width: 260px; }
-.context-image { margin-top: 34px; width: min(100%, 250px); color: var(--muted-ink); font: 10px/1.4 Arial, sans-serif; }
+.context-image { width: min(100%, 250px); color: var(--muted-ink); font: 10px/1.4 Arial, sans-serif; }
 .context-image img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: saturate(.72) sepia(.12); border: 1px solid var(--line); }
 .image-caption, .image-status { display: flex; align-items: center; gap: 6px; margin-top: 9px; }
 .image-caption { color: var(--accent); letter-spacing: .04em; }
@@ -59,8 +79,8 @@ footer { border-top: 1px solid var(--line); min-height: 70px; color: var(--muted
 .archive-list { margin-top: 12px; }
 .archive-item { border: 0; border-bottom: 1px solid var(--line); color: var(--ink); background: transparent; width: 100%; display: flex; justify-content: space-between; padding: 17px 0; text-align: left; font: 16px Georgia, serif; }
 .empty { color: var(--muted-ink); font: 13px/1.6 Arial, sans-serif; padding: 18px 0; }
-@media (max-width: 720px) { .archive-stat { margin-top: 30px; } }
 .loading-screen { min-height: 100vh; display: grid; place-content: center; justify-items: center; gap: 18px; background: var(--paper); color: var(--muted-ink); font: 12px Arial, sans-serif; }
 .loading-mark { width: 32px; height: 32px; border: 1px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 720px) { .site-header, footer, .poetry-main { width: min(100% - 36px, 520px); } .site-header { height: 72px; background: color-mix(in srgb, var(--paper) 92%, transparent); } .poetry-main { display: block; padding: 52px 0 38px; } .intro { position: static; margin-bottom: 48px; } .context-image { width: min(100%, 280px); } .desktop-break { display: none; } .poem-content { padding: 32px 25px 28px; } .poem-text { font-size: 17px; } .poem-meta { padding: 16px 20px; font-size: 9px; } .card-actions { padding: 14px 20px; flex-wrap: wrap; } footer { min-height: 62px; } footer span:first-child, footer span:last-child { display: none; } .footer-note { margin: auto; } }
+.container { width: 100%; margin: 0 auto; }

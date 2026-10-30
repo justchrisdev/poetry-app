@@ -31,20 +31,29 @@ export default function PoetryApp({ poems, envError = false }: { poems: Poem[]; 
     let cancelled = false
     setImageLoading(true)
     setContextImage(null)
+
+    // Używamy unikalnego ID lub tytułu wiersza, aby uniknąć konfliktów pamięci podręcznej przeglądarki
     fetch('/api/context-image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: poem.title, content: poem.content }),
+      body: JSON.stringify({ id: poem.id, title: poem.title, content: poem.content }),
     })
-      .then((response) => response.ok ? response.json() : null)
+      .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         if (cancelled) return
         setContextImage(data?.image ?? null)
       })
-      .catch(() => { if (!cancelled) setContextImage(null) })
-      .finally(() => { if (!cancelled) setImageLoading(false) })
-    return () => { cancelled = true }
-  }, [poem])
+      .catch(() => {
+        if (!cancelled) setContextImage(null)
+      })
+      .finally(() => {
+        if (!cancelled) setImageLoading(false)
+      })
+
+    return () => {
+      cancelled = true // Anuluje stare żądanie, jeśli użytkownik kliknie inny wiersz
+    }
+  }, [poem.id]) // <--- Zmiana z [poem] na [poem.id] zapobiega zbędnym re-renderom
 
   useEffect(() => {
     if (!slowReading) return
@@ -71,15 +80,32 @@ export default function PoetryApp({ poems, envError = false }: { poems: Poem[]; 
     <div className={dark ? 'poetry-shell dark' : 'poetry-shell'}>
       <header className="site-header">
         <div className="brand"><span className="brand-mark"><Leaf size={18} strokeWidth={1.5} /></span><span>LEŚMIAN / 24</span></div>
-        <nav><button className="text-button" onClick={() => setArchiveOpen(true)}><BookOpen size={16} /> Archiwum</button><button className="icon-button" aria-label="Przełącz motyw" onClick={() => setDark(!dark)}>{dark ? <Sun size={18} /> : <Moon size={18} />}</button></nav>
+        <nav><button className="text-button" onClick={() => setArchiveOpen(true)}><BookOpen size={16} /> Archiwum</button><button className="icon-button" aria-label="Przełącz motyw" onClick={() => setDark(!dark)}>{dark ? <Sun size={18} /> : <Moon size={18} />}</button>
+                      <button className={slowReading ? 'outline-button active-reading' : 'outline-button'} onClick={() => setSlowReading(!slowReading)} aria-pressed={slowReading}>{slowReading ? <X size={16} /> : <BookOpen size={16} />} {slowReading ? 'Zatrzymaj czytanie' : 'Czytaj powoli'}</button>
+
+        </nav>
       </header>
 
       <main className="poetry-main">
-        <div><section className="intro"><p className="eyebrow">Codzienny wiersz</p><h1>Na dziś,<br /><em>dla Ciebie.</em></h1><p className="intro-copy">Chwila zatrzymania w świecie słów<br className="desktop-break" /> Bolesława Leśmiana.</p><div className="archive-stat"><span className="stat-dot" />{allPoems.length} {allPoems.length === 1 ? 'wiersz' : 'wierszy'} w archiwum</div><div className="context-image" aria-live="polite">{imageLoading ? <span className="image-status"><LoaderCircle size={15} className="spin" /> Szukam obrazu do kontekstu…</span> : contextImage ? <><img src={contextImage} alt={`Obraz inspirowany wierszem „${poem.title}”`} /><span className="image-caption"><ImageIcon size={13} /> Obraz z Wikimedia Commons</span></> : <span className="image-status">Nie znaleziono obrazu do tego wiersza.</span>}</div></section></div>
+        <div className="container">
+          <section className="intro">
+            <div>
+              <p className="eyebrow">Codzienny wiersz</p>
+              <h1>Na dziś,<br /><em>dla Ciebie.</em></h1>
+              <p className="intro-copy">Chwila zatrzymania w świecie słów<br className="desktop-break" /> Bolesława Leśmiana.</p>
+              <div className="archive-stat"><span className="stat-dot" />{allPoems.length} {allPoems.length === 1 ? 'wiersz' : 'wierszy'} w archiwum</div>
+            </div>
+            <div className="context-image" aria-live="polite">
+              {imageLoading ? <span className="image-status"><LoaderCircle size={15} className="spin" /> Szukam obrazu do kontekstu…</span> : contextImage ? <><img src={contextImage} alt={`Obraz inspirowany wierszem „${poem.title}”`} /><span className="image-caption"><ImageIcon size={13} /> Obraz z Wikimedia Commons</span></> : <span className="image-status">Nie znaleziono obrazu do tego wiersza.</span>}
+            </div>
+          </section>
+        </div>
         <section className="poem-card" aria-live="polite">
+          
           <div className="poem-meta"><span>{poem.page_id ? `Strona ${poem.page_id}` : 'Z archiwum poezji'}</span><span className="meta-line" /><span>{new Intl.DateTimeFormat('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date())}</span></div>
           <div className="poem-content"><h2>{poem.title}</h2><p className="poem-text whitespace-pre-line">{poem.content}</p><div className="poem-author">Bolesław Leśmian <span>—</span> 1877–1937</div></div>
-          <div className="card-actions"><button className="outline-button" onClick={chooseRandom}><Shuffle size={16} /> Losuj wiersz</button><button className={slowReading ? 'outline-button active-reading' : 'outline-button'} onClick={() => setSlowReading(!slowReading)} aria-pressed={slowReading}>{slowReading ? <X size={16} /> : <BookOpen size={16} />} {slowReading ? 'Zatrzymaj czytanie' : 'Czytaj powoli'}</button><button className="outline-button" onClick={copyPoem}>{copied ? <Check size={16} /> : <Copy size={16} />} {copied ? 'Skopiowano' : 'Kopiuj treść'}</button></div>
+          <div className="card-actions"><button className="outline-button" onClick={chooseRandom}><Shuffle size={16} /> Losuj wiersz</button><button className="outline-button" onClick={copyPoem}>{copied ? <Check size={16} /> : <Copy size={16} />} {copied ? 'Skopiowano' : 'Kopiuj treść'}</button>          <button className={slowReading ? 'outline-button active-reading' : 'outline-button'} onClick={() => setSlowReading(!slowReading)} aria-pressed={slowReading}>{slowReading ? <X size={16} /> : <BookOpen size={16} />} {slowReading ? 'Zatrzymaj czytanie' : 'Czytaj powoli'}</button>
+</div>
         </section>
         {envError && <p className="notice">Połącz Supabase, aby wyświetlać pełne archiwum. Pokazujemy wiersz przykładowy.</p>}
       </main>
